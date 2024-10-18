@@ -1,0 +1,36 @@
+# Node modules
+node_modules/
+
+# Logs
+logs
+*.log
+
+# Build output
+dist/
+build/
+
+# Environment variables
+.env
+
+# Dependency directories
+bower_components/
+
+# Testing
+coverage/
+*.lcov
+
+# IDE specific files
+.vscode/
+.idea/
+
+# Mac system files
+.DS_Store
+
+# NPM package lock file (optional, if you want to exclude it)
+# package-lock.json
+# yarn.lock
+
+# Other files to ignore
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
