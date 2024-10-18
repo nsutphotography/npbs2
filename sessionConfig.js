@@ -13,7 +13,7 @@ redisClient.on('error', (err) => {
   console.error('Redis Client Error', err);
 });
 
-const RedisStore = connectRedis(session); // Create RedisStore by passing session to connect-redis
+const RedisStore = new connectRedis(session); // Create RedisStore by passing session to connect-redis using 'new'
 
 const sessionConfig = session({
   store: new RedisStore({ client: redisClient }), // Use the Redis client as the session store
