@@ -24,4 +24,4 @@ redisClient.on('error', (err) => {
   }
 })();
 
-module.exports = redisClient;
+module.exports = redisClient; // Ensure this line is after the connection logic
