@@ -10,12 +10,13 @@ const redisClient = Redis.createClient({
 redisClient.connect().catch(err => console.error('Failed to connect to Redis:', err));
 
 // Create the RedisStore
-const RedisStore = connectRedis(session); // Create the store correctly
+const RedisStore = connectRedis(session); // Correct usage for version 7.x
 
 const store = new RedisStore({
   client: redisClient
 });
 
+// Session configuration
 const sessionConfig = session({
   store: store,
   secret: process.env.SESSION_SECRET, // Ensure this is set in your environment variables
