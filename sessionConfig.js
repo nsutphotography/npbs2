@@ -1,22 +1,19 @@
-// sessionConfig.js
 const session = require('express-session');
-const connectRedis = require('connect-redis').default;
-const redisClient = require('./redisClient'); // Import the Redis client
+const connectRedis = require('connect-redis'); // No need for .default
+const Redis = require('redis'); // Import Redis
+const redisClient = Redis.createClient({
+  url: process.env.REDIS_URL // Use an environment variable for the Redis URL
+});
 
-// Log the Redis client
-console.log('Redis Client:', redisClient);
+redisClient.connect().catch(err => console.error('Failed to connect to Redis:', err));
 
-if (!redisClient) {
-  console.error('Redis client is not initialized!');
-}
+const RedisStore = connectRedis(session);
 
-const RedisStore = connectRedis(session); // Get the RedisStore function
-
-const store = new RedisStore({ client: redisClient }); // Create an instance of RedisStore
+const store = new RedisStore({ client: redisClient });
 
 const sessionConfig = session({
-  store: store, // Use the Redis client as the session store
-  secret: process.env.SESSION_SECRET,
+  store: store,
+  secret: process.env.SESSION_SECRET, // Ensure this is set in your environment variables
   resave: false,
   saveUninitialized: false,
   cookie: {
@@ -27,4 +24,4 @@ const sessionConfig = session({
   }
 });
 
-module.exports = sessionConfig; // Export the session configuration
+module.exports = sessionConfig;
