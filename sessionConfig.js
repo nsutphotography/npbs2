@@ -1,16 +1,20 @@
 const session = require('express-session');
-const connectRedis = require('connect-redis'); // Remove .default
-const Redis = require('redis');
+const connectRedis = require('connect-redis'); // Import connect-redis
+const Redis = require('redis'); // Import Redis
 
+// Create a Redis client
 const redisClient = Redis.createClient({
-  url: process.env.REDIS_URL // Ensure this is set in your environment variables
+  url: process.env.REDIS_URL // Use an environment variable for the Redis URL
 });
 
 redisClient.connect().catch(err => console.error('Failed to connect to Redis:', err));
 
-const RedisStore = connectRedis(session); // This should work now
+// Create the RedisStore
+const RedisStore = connectRedis(session); // Create the store correctly
 
-const store = new RedisStore({ client: redisClient });
+const store = new RedisStore({
+  client: redisClient
+});
 
 const sessionConfig = session({
   store: store,
