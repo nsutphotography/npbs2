@@ -40,7 +40,7 @@ const requestOtp = async (req, res) => {
 
         // Store email in session
         req.session.email = email;
-        // console.log(req.session.email);
+        console.log(req.session.email);
 
         res.status(200).json({ message: 'OTP sent to email' });
     } catch (error) {
@@ -59,9 +59,9 @@ const verifyOtp = async (req, res) => {
     const { otp } = req.body;
      // Retrieve email from session
      const email = req.session.email;
-    //  console.log(req.session.email);
+     console.log(req.session.email);
      if (!email) {
-        return res.status(400).json({ error: 'Session expired. Please request OTP again.' });
+        return res.status(400).json({ error: 'Session expired. Please request OTP again. no email in session from backend ' });
     }
 
     try {
