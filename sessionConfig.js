@@ -1,9 +1,10 @@
-// sessionConfig.js
 const session = require('express-session');
 const connectRedis = require('connect-redis'); // Import connect-redis
-const redisClient = require('./redisClient'); // Import the Redis client
 
-const RedisStore = connectRedis(session); // Create RedisStore by passing session to connect-redis
+// Use the default export from connect-redis
+const RedisStore = connectRedis.default || connectRedis(session); // Handle the default export
+
+const redisClient = require('./redisClient'); // Import your Redis client
 
 // Session configuration using Redis as the store
 const sessionConfig = session({
