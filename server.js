@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const sessionConfig = require('./sessionConfig'); // Import session configuration
+const cookieParser = require('cookie-parser');
+
 
 
 
@@ -22,24 +23,26 @@ const loginRoutes = require('./routes/login.routes');
 connectDB();
 
 // Middleware to enable CORS
-console.log('Frontend URL:', process.env.FRONTEND_URL);
+// console.log('Frontend URL:', process.env.FRONTEND_URL);
 
 
 app.use(cors(
   {
-  // origin: 'http://localhost:5173', // Allow requests from this origin
-  origin: process.env.FRONTEND_URL,  // Use the frontend URL from environment variable
+  origin: 'http://localhost:5173', // Allow requests from this origin
+//   // origin: process.env.FRONTEND_URL,  // Use the frontend URL from environment variable
   credentials: true // Allow credentials (cookies) to be sent
 }
 ));
 // Middleware to parse JSON and urlencoded data
 app.use(express.json());
+app.use(cookieParser()); 
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.set('trust proxy', 1); // Trust proxy, required for secure cookies
 
-app.use(sessionConfig);
+// app.set('trust proxy', 1); // Trust proxy, required for secure cookies
+
+// app.use(sessionConfig);
 
 app.use('/api/users/signup', signupRoutes);
 app.use('/api/users/login', loginRoutes);
@@ -50,6 +53,7 @@ app.use(express.static(path.join(__dirname, 'client/build')));
 
 // API routes
 app.get('/', (req, res) => {
+  res.cookie('test_cookie', "for_test");
   res.json({ message: "Welcome to the NSUT Photography Blog API!" });
 });
 

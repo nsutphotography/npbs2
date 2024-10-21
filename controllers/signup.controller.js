@@ -1,5 +1,7 @@
 const UserModel = require('../models/user.module');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
 const { generateOtp } = require('../utils/otpGenerator');
 const { sendOtpEmail } = require('../services/emailService');
 
@@ -38,33 +40,43 @@ const requestOtp = async (req, res) => {
         // Send OTP email
         await sendOtpEmail(email, otp);
 
-        // Store email in session
-        req.session.email = email;
-        console.log(req.session.email);
+        // store email in jwt
+        const token_email = jwt.sign({ email: email }, process.env.JWT_SECRET, { expiresIn: '10m' });
 
-        res.status(200).json({ message: 'OTP sent to email' });
+        res.cookie('token_email', token_email, {
+            // httpOnly: true,
+            // secure: process.env.NODE_ENV === 'production',
+            maxAge: 3600000
+        });
+
+        res.status(200).json({ 
+            message: 'OTP sent to email', 
+            redirect: '/signup/otp-verify'  // Specify where the frontend should navigate
+        });
     } catch (error) {
-        res.status(500).json({ error: 'Error requesting OTP', details: error.message });
+        res.status(500).json({ error: 'Error requesting OTP from server catch', details: error.message });
     }
 };
 
 
 // Verify OTP
 const verifyOtp = async (req, res) => {
-    // res.status(500).json({ error: 'Error verifying OTP', message: "akeka"});
-    // return res.status(200).json({ message: 'OTP verified successfully' });
+    const token_email = req.cookies.token_email;
 
-    // console.log("Session data:", req.session); // Check entire session object
-
-    const { otp } = req.body;
-     // Retrieve email from session
-     const email = req.session.email;
-     console.log(req.session.email);
-     if (!email) {
-        return res.status(400).json({ error: 'Session expired. Please request OTP again. no email in session from backend ' });
+    if (!token_email) {
+        return res.status(403).json({ message: 'No token_email provided from server' });
     }
-
     try {
+        const decoded = jwt.verify(token_email, process.env.JWT_SECRET); // Verify the token with your JWT secret
+
+        email = decoded.email; // Extract email from the decoded token
+
+        // Now you can use the email to verify the OTP or perform other actions
+        console.log('Email from token:', email);
+        if (!email) {
+            return res.status(400).json({ error: 'Session expired. Please request OTP again. no email in session from backend ' });
+        }
+        const { otp } = req.body;
         const user = await UserModel.findOne({ email });
 
         if (!user || user.otp !== otp || user.otpExpires < new Date()) {
@@ -84,12 +96,49 @@ const verifyOtp = async (req, res) => {
         await user.save();
 
         // Clear the session
-        req.session.email = null;
+        // req.session.email = null;
 
-        res.status(200).json({ message: 'OTP verified successfully' });
-    } catch (error) {
-        res.status(500).json({ error: 'Error verifying OTP', details: error.message });
+        res.status(200).json({ message: 'OTP verified successfully',redirect: '/login' });
+        
+        // Example response
+
+    } catch (err) {
+        return res.status(401).json({ message: 'Invalid or expired token_email from server catch' });
     }
+
+    // Retrieve email from session
+    //  const email = req.session.email;
+    //  console.log(req.session.email);
+    // if (!email) {
+    //     return res.status(400).json({ error: 'Session expired. Please request OTP again. no email in session from backend ' });
+    // }
+
+    // try {
+        // const user = await UserModel.findOne({ email });
+
+        // if (!user || user.otp !== otp || user.otpExpires < new Date()) {
+        //     return res.status(400).json({ error: 'Invalid or expired OTP' });
+        // }
+
+        // // Mark email as verified
+        // user.emailVerified = true;
+        // user.otp = undefined; // Clear the OTP
+        // user.otpExpires = undefined;
+
+        // // Assign blue tick if the email is from nsut.ac.in
+        // if (email.endsWith('@nsut.ac.in')) {
+        //     user.blueTick = true;
+        // }
+
+        // await user.save();
+
+        // // Clear the session
+        // // req.session.email = null;
+
+        // res.status(200).json({ message: 'OTP verified successfully' });
+    // } catch (error) {
+    //     res.status(500).json({ error: 'Error verifying OTP from server catch', details: error.message });
+    // }
 };
 
 
