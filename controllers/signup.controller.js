@@ -1,3 +1,4 @@
+const debugging = true;
 const UserModel = require('../models/user.module');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -48,7 +49,9 @@ const requestOtp = async (req, res) => {
             sameSite: 'None', // Allows cross-origin requests (important if your frontend and backend are on different domains)
             path: '/', // Makes the cookie accessible across your entire site
         });
-
+        if (debugging) {
+            console.log("token_email send --",token_email,"-- signup route");
+          }
         res.status(200).json({ 
             message: 'OTP sent to email', 
             redirect: '/signup/otp-verify'  // Specify where the frontend should navigate
@@ -61,7 +64,9 @@ const requestOtp = async (req, res) => {
 // Verify OTP
 const verifyOtp = async (req, res) => {
     const token_email = req.cookies.token_email;
-
+    if (debugging) {
+        console.log("token_email come --",token_email,"-- signup route");
+      }
     if (!token_email) {
         return res.status(403).json({ message: 'No token_email provided ---- server' });
     }
