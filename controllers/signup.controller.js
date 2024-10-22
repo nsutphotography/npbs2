@@ -42,7 +42,11 @@ const requestOtp = async (req, res) => {
         // Store email in JWT
         const token_email = jwt.sign({ email: email }, process.env.JWT_SECRET, { expiresIn: '10m' });
         res.cookie('token_email', token_email, {
-            maxAge: 10 * 60 * 1000,
+            maxAge: 10 * 60 * 1000, // Sets the expiration time (10 minutes)
+            httpOnly: true, // Prevents JavaScript from accessing the cookie (enhances security)
+            secure: true, // Ensures the cookie is only sent over HTTPS (important for production)
+            sameSite: 'None', // Allows cross-origin requests (important if your frontend and backend are on different domains)
+            path: '/', // Makes the cookie accessible across your entire site
         });
 
         res.status(200).json({ 
