@@ -7,6 +7,7 @@ const { sendOtpEmail } = require('../services/emailService');
 
 // Request OTP during signup
 const requestOtp = async (req, res) => {
+    console.log("\x1b[34m", "requestOtp start", "\x1b[0m");
     const { name, email, password } = req.body;
 
     try {
@@ -63,6 +64,7 @@ const requestOtp = async (req, res) => {
 
 // Verify OTP
 const verifyOtp = async (req, res) => {
+    console.log("\x1b[34m", "verifyOtp start", "\x1b[0m");
     const token_email = req.cookies.token_email;
     if (debugging) {
         console.log("token_email come --",token_email,"-- signup route");

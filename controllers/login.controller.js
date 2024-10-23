@@ -9,6 +9,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 // Login controller function
 const login = async (req, res) => {
+  console.log("\x1b[34m", "login start", "\x1b[0m");
   const { email, password } = req.body;
   if (debugging) {
     console.log("email --",email,"-- login route");
