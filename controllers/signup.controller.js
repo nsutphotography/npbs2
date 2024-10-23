@@ -99,6 +99,12 @@ const verifyOtp = async (req, res) => {
         }
 
         await user.save();
+
+        res.clearCookie('token_email');
+
+        if (debugging) {
+            console.log("token_email clear deleated --",token_email,"-- signup route verifyOtp");
+          }
         res.status(200).json({ message: 'OTP verified successfully', redirect: '/login' });
 
     } catch (err) {
